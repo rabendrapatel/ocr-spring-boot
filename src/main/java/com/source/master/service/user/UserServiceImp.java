@@ -54,6 +54,11 @@ public class UserServiceImp implements UserService {
 		return userMasterRepo.findByUserId(userId);
 	}
 
+	@Override
+	public UserMaster getByUserName(String userName) {
+		return userMasterRepo.findByUserName(userName);
+	}
+
 	
 
 }

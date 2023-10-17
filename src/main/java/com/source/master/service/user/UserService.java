@@ -17,5 +17,7 @@ public interface UserService {
 
 	UserMaster findByUserId(Long userId);
 
+	UserMaster getByUserName(String userName);
+
 
 }

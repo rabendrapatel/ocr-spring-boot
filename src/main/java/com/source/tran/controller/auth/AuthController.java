@@ -1,5 +1,7 @@
 package com.source.tran.controller.auth;
 
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +26,6 @@ import com.source.response.JwtAuthenticationResponse;
 import com.source.response.ResponseRes;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping(value = "/api/tran/auth")
 public class AuthController {
 
@@ -37,14 +38,22 @@ public class AuthController {
 	@Autowired
 	AuthenticationManager authenticationManager;
 
-	@PostMapping("/login/via/user/id")
-	public ResponseEntity<?> authenticateUserViaUserId(@RequestBody UserReqDto req, HttpServletRequest request) {
+	@Autowired
+	BCryptPasswordEncoder bCryptPasswordEncoder;
+
+	@PostMapping("/login/via/username/password")
+	public ResponseEntity<?> authenticateUserViaPassword(@RequestBody UserReqDto req, HttpServletRequest request) {
 
 		try {
-			UserMaster user = userService.findByUserId(req.getUserId());
-			if (user == null) {
+			UserMaster user = userService.getByUserName(req.getUserName());
+			if (!Optional.ofNullable(user).isPresent()) {
 				return ResponseEntity.ok(new ResponseRes<>(HttpStatus.UNAUTHORIZED.value(),
-						HttpStatus.UNAUTHORIZED.name(), "Wrong user id"));
+						HttpStatus.UNAUTHORIZED.name(), "Wrong user name"));
+			}
+
+			if (!bCryptPasswordEncoder.matches(req.getPassword(), user.getPassword())) {
+				return ResponseEntity.ok(new ResponseRes<>(HttpStatus.UNAUTHORIZED.value(),
+						HttpStatus.UNAUTHORIZED.name(), "Wrong password"));
 			}
 
 			if (user.getStatus() != 1) {
@@ -52,24 +61,24 @@ public class AuthController {
 						HttpStatus.UNAUTHORIZED.name(), "User is inactive"));
 			}
 
-			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-					user.getUserName(), null);
-			Authentication authentication = authenticationManager.authenticate(authenticationToken);
+			Authentication authentication = authenticationManager
+					.authenticate(new UsernamePasswordAuthenticationToken(req.getUserName(), req.getPassword()));
 
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-			String jwtToken = tokenProvider.generateToken(authentication, "user");
+			String jwtTolen = tokenProvider.generateToken(authentication, "user");
 
-			JwtAuthenticationResponse authenticationResponse = new JwtAuthenticationResponse(jwtToken);
+			JwtAuthenticationResponse athenticationResponse = new JwtAuthenticationResponse(jwtTolen);
 
-			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.name(),
-					"Login successful", authenticationResponse));
+			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Login successfull",
+					athenticationResponse));
 
 		} catch (BadCredentialsException e) {
 			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.name(),
-					"Invalid access from " + req.getUserId()));
+					"Invalid access from " + req.getUserName()));
 		} catch (Exception e) {
-			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.name(),
-					"Internal server error " + e.getMessage()));
+			e.printStackTrace();
+			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+					HttpStatus.INTERNAL_SERVER_ERROR.name(), "Internal server error " + e.getMessage()));
 		}
 	}
 

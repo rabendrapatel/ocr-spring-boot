@@ -31,17 +31,15 @@ public class DocumentController {
 	@PostMapping("/import")
 	public ResponseEntity<?> importDocument(@RequestParam("file") MultipartFile file, @CurrentUser UserPrincipal user) {
 		try {
-			if (file.isEmpty()) {
-				return new ResponseEntity<>("File is empty", HttpStatus.BAD_REQUEST);
-			}
 			Boolean isSuccess = documentService.importDocument(file, user);
-			if (isSuccess) {
-				return new ResponseEntity<>("Document uploaded successfully", HttpStatus.OK);
-			} else {
-				return new ResponseEntity<>("Document upload failed - ", HttpStatus.INTERNAL_SERVER_ERROR);
-			}
+			return ResponseEntity.ok(
+					new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Saved Successfully", isSuccess));
+		} catch (RuntimeException e) {
+			return ResponseEntity.ok(
+					new ResponseRes<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(), e.getMessage()));
 		} catch (Exception e) {
-			return new ResponseEntity<>("Document upload failed - " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+					HttpStatus.INTERNAL_SERVER_ERROR.name(), "Internal server error " + e.getMessage()));
 		}
 	}
 

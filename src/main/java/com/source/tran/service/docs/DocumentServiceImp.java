@@ -35,7 +35,9 @@ public class DocumentServiceImp implements DocumentService {
 	@Override
 	public Boolean importDocument(MultipartFile file, UserPrincipal user) {
 		try {
-			if (file.getContentType().equals("application/pdf")) {
+			if (file.isEmpty()) {
+				throw new RuntimeException("File is empty");
+			}else if (file.getContentType().equals("application/pdf")) {
 				// If it's a PDF, convert it to images
 				String data = helper.processPdf(file);
 				Document invoice = helper.processOCRData(data);
@@ -48,7 +50,7 @@ public class DocumentServiceImp implements DocumentService {
 				documentRepo.save(invoice);
 				return true;
 			} else {
-				throw new IllegalArgumentException("Unsupported file type");
+				throw new RuntimeException("Unsupported file type");
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());

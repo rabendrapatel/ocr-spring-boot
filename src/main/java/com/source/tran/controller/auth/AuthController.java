@@ -139,5 +139,7 @@ public class AuthController {
 					HttpStatus.INTERNAL_SERVER_ERROR.name(), "Internal server error " + e.getMessage()));
 		}
 	}
+	
+	
 
 }

@@ -24,4 +24,8 @@ public interface UserMasterRepository extends JpaRepository<UserMaster, Long> {
 	
 	Optional<UserMaster> findByMobileNo(String mobileNo);
 
+	int countByEmailAndUserIdNot(String email, Long userId);
+
+	int countByEmailAndUserId(String email, Long userId);
+
 }

@@ -64,6 +64,9 @@ public class UserServiceImp implements UserService {
 
 	@Override
 	public UserReqDto saveUser(UserReqDto req, UserPrincipal user) {
+		if (validateEmail(req.getEmail(), 0l)) {
+			throw new RuntimeException("Email already exist");
+		}
 		ModelMapper m = MapperUtils.getInstance();
 		userMasterRepo.findByEmail(req.getEmail()).ifPresent(u -> {
 			throw new RuntimeException("Email already exist");
@@ -90,7 +93,6 @@ public class UserServiceImp implements UserService {
 
 	@Override
 	public UserReqDto updateUser(UserReqDto req, UserPrincipal user) {
-
 		Optional<UserMaster> optionalUserMaster = userMasterRepo.findById(req.getUserId());
 		if (optionalUserMaster.isPresent()) {
 			UserMaster userMaster = optionalUserMaster.get();
@@ -154,5 +156,13 @@ public class UserServiceImp implements UserService {
 		emailHelper.sendUserDetailsOnEmail(user);
 
 		return req;
+	}
+
+	private boolean validateEmail(String email, Long userId) {
+		if (userId > 0) {
+			return userMasterRepo.countByEmailAndUserIdNot(email, userId) > 0;
+		} else {
+			return userMasterRepo.countByEmailAndUserId(email, userId) > 0;
+		}
 	}
 }

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,9 @@ import com.source.utill.MapperUtils;
 @Service
 public class UserServiceImp implements UserService {
 
+	@Value("${app.aesSecret}")
+	String aesSecretKey;
+	
 	@Autowired
 	FileHandlerUtils fs;
 
@@ -152,7 +156,8 @@ public class UserServiceImp implements UserService {
 		user = userMasterRepo.save(user);
 
 		/* Send email to user */
-		emailHelper.sendEmailVerificationEmail(user);
+		String token = tranHelper.generateTokenByUserId(user.getUserId(),aesSecretKey);
+		emailHelper.sendEmailVerificationEmail(user,token);
 		emailHelper.sendUserDetailsOnEmail(user);
 
 		return req;

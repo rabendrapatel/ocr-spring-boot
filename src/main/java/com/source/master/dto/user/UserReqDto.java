@@ -19,4 +19,5 @@ public class UserReqDto {
     private String lastName;
     private Long roleId;
     private String photo;
+    private String token;
 }

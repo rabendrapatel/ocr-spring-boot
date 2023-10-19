@@ -140,6 +140,36 @@ public class AuthController {
 		}
 	}
 	
+	@PostMapping("/send/reste/password/email")
+	public ResponseEntity<?> sendResetPasswordEmail(@RequestBody UserReqDto req) {
+		try {
+			req = authService.sendResetPasswordEmail(req);
+			return ResponseEntity
+					.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Password reset email sent successfully", req));
+		} catch (RuntimeException e) {
+			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(),
+					e.getMessage()));
+		} catch (Exception e) {
+			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+					HttpStatus.INTERNAL_SERVER_ERROR.name(), "Internal server error " + e.getMessage()));
+		}
+	}
+	
+	@PostMapping("/reset/password")
+	public ResponseEntity<?> resetPassword(@RequestBody UserReqDto req) {
+		try {
+			req = authService.resetPassword(req);
+			return ResponseEntity
+					.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Password reset email sent successfully", req));
+		} catch (RuntimeException e) {
+			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(),
+					e.getMessage()));
+		} catch (Exception e) {
+			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+					HttpStatus.INTERNAL_SERVER_ERROR.name(), "Internal server error " + e.getMessage()));
+		}
+	}
+	
 	
 
 }

@@ -8,4 +8,8 @@ public interface AuthService {
 
 	UserReqDto resendVerificationEmail(UserReqDto req);
 
+	UserReqDto sendResetPasswordEmail(UserReqDto req);
+
+	UserReqDto resetPassword(UserReqDto req);
+
 }

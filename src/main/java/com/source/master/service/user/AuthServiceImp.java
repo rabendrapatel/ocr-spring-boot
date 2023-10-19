@@ -2,20 +2,25 @@ package com.source.master.service.user;
 
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.source.master.dto.user.UserReqDto;
 import com.source.master.entity.user.UserMaster;
+import com.source.master.entity.user.UserPasswordResetLink;
 import com.source.master.repository.user.UserMasterRepository;
+import com.source.master.repository.user.UserPasswordResetLinkRepository;
 import com.source.tran.helper.user.UserEmailHelper;
 import com.source.tran.helper.user.UserTranHelper;
-import com.source.utill.CommonUtils;
 
 @Service
 public class AuthServiceImp implements AuthService {
 
+	@Value("${app.aesSecret}")
+	String aesSecretKey;
+
 	@Autowired
-	UserTranHelper tranHelper;
+	UserTranHelper userHelper;
 
 	@Autowired
 	UserEmailHelper emailHelper;
@@ -23,27 +28,73 @@ public class AuthServiceImp implements AuthService {
 	@Autowired
 	UserMasterRepository userMasterRepo;
 
+	@Autowired
+	UserPasswordResetLinkRepository userPasswordResetLinkRepo;
+
 	@Override
 	public String verifyEmail(String accetoken) {
-		Long userId = Long.valueOf(CommonUtils.decodeFromBase64(accetoken));
+		Long userId = userHelper.getUserIdByToken(accetoken, aesSecretKey);
 		UserMaster user = userMasterRepo.findByUserId(userId);
 		if (Optional.ofNullable(user).isPresent() && user.getIsEmailVerify().equalsIgnoreCase("No")) {
 			user.setIsEmailVerify("Yes");
 			userMasterRepo.save(user);
-			return tranHelper.getEmailVerifiedMessage(user, "Success");
+			return userHelper.getEmailVerifiedMessage(user, "Success");
 		}
-		return tranHelper.getEmailVerifiedMessage(user, "failed");
+		return userHelper.getEmailVerifiedMessage(user, "failed");
 	}
 
 	@Override
 	public UserReqDto resendVerificationEmail(UserReqDto req) {
 		Optional<UserMaster> userOp = userMasterRepo.findByEmail(req.getEmail());
-		if(!userOp.isPresent()) {
+		if (!userOp.isPresent()) {
 			throw new RuntimeException("Email not found . Please try again.");
-		}else if(userOp.isPresent() && userOp.get().getIsEmailVerify().equalsIgnoreCase("yes")) {
+		} else if (userOp.isPresent() && userOp.get().getIsEmailVerify().equalsIgnoreCase("yes")) {
 			throw new RuntimeException("Email already verified");
 		}
-		emailHelper.sendEmailVerificationEmail(userOp.get());
+		UserMaster user = userOp.get();
+		String token = userHelper.generateTokenByUserId(user.getUserId(), aesSecretKey);
+		emailHelper.sendEmailVerificationEmail(user, token);
+		return req;
+	}
+
+	@Override
+	public UserReqDto sendResetPasswordEmail(UserReqDto req) {
+		Optional<UserMaster> userOp = userMasterRepo.findByEmail(req.getEmail());
+		if (!userOp.isPresent()) {
+			throw new RuntimeException("Email not found . Please try again.");
+		}
+		String token = userHelper.generateTokenByUserId(userOp.get().getUserId(), aesSecretKey);
+		String resetLink = emailHelper.sendResetPasswordEmail(userOp.get(), token);
+
+		UserPasswordResetLink reset = new UserPasswordResetLink();
+		reset.setToken(token);
+		reset.setLink(resetLink);
+		reset.setIsPasswordReset("No");
+		userPasswordResetLinkRepo.save(reset);
+
+		return req;
+	}
+
+	@Override
+	public UserReqDto resetPassword(UserReqDto req) {
+		UserPasswordResetLink reset = userPasswordResetLinkRepo.findByToken(req.getToken());
+		if (reset == null || !"No".equalsIgnoreCase(reset.getIsPasswordReset())) {
+			throw new RuntimeException("Invalid request, Please try again.");
+		}
+		
+		Long userId = userHelper.getUserIdByToken(req.getToken(), aesSecretKey);
+		UserMaster user = userMasterRepo.findByUserId(userId);
+
+		if (user == null) {
+			throw new RuntimeException("User not found, Please try again.");
+		}
+		reset.setIsPasswordReset("Yes");
+		userPasswordResetLinkRepo.save(reset);
+
+		String password = userHelper.encodePassword(req.getPassword());
+		user.setPassword(password);
+		userMasterRepo.save(user);
+
 		return req;
 	}
 

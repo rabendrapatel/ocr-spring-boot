@@ -2,12 +2,14 @@ package com.source.tran.helper.user;
 
 import java.util.Random;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.source.constant.Constant;
 import com.source.master.entity.user.UserMaster;
+import com.source.utill.CommonUtils;
 
 @Component
 public class UserTranHelper {
@@ -33,6 +35,23 @@ public class UserTranHelper {
 
 	public String encodePassword(String password) {
 		return bCryptPasswordEncoder.encode(password);
+	}
+
+	public String generateTokenByUserId(Long userId, String aesSecretKey) {
+		String aestoken = CommonUtils.encodeAES(String.valueOf(userId),aesSecretKey);
+		JSONObject json = new JSONObject();
+		json.put("token", aestoken);
+		json.put("time", System.currentTimeMillis());
+		String base64Token = CommonUtils.encodeToBase64(json.toString());
+		return base64Token;
+	}
+	
+	public Long getUserIdByToken(String token, String aesSecretKey) {
+		String base64Token = CommonUtils.decodeFromBase64(token);
+		JSONObject json = new JSONObject(base64Token);
+		String encodedAes = json.getString("token");
+		String aestoken = CommonUtils.decodeAES(encodedAes,aesSecretKey);
+		return Long.valueOf(aestoken);
 	}
 
 	public String getEmailVerifiedMessage(UserMaster user, String type) {
@@ -66,4 +85,5 @@ public class UserTranHelper {
 		
 	}
 
+	
 }

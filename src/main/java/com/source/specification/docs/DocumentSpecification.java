@@ -8,10 +8,10 @@ import org.springframework.data.jpa.domain.Specification;
 import com.source.tran.dto.docs.DocumentReqDto;
 import com.source.tran.entity.docs.Document;
 
-public class InvoiceSpecification  {
+public class DocumentSpecification  {
 
 
-	public static Specification<Document> getInvoiceFilter(DocumentReqDto req) {
+	public static Specification<Document> getDocumentFilter(DocumentReqDto req) {
 		return (root, query, builder) -> {
 			List<Predicate> list = new ArrayList<>();
 			if (req.getInvoiceNumber() != null && !req.getInvoiceNumber().isEmpty()) {

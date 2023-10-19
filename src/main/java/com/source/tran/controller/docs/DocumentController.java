@@ -16,16 +16,17 @@ import org.springframework.data.domain.Sort;
 
 import com.source.config.jwt.CurrentUser;
 import com.source.config.jwt.UserPrincipal;
+import com.source.response.ResponseRes;
 import com.source.tran.dto.docs.DocumentListDto;
 import com.source.tran.dto.docs.DocumentReqDto;
 import com.source.tran.service.docs.DocumentService;
 
 @RestController
-@RequestMapping(value = "/api/invoice")
+@RequestMapping(value = "/api/tran/docs")
 public class DocumentController {
 
 	@Autowired
-	DocumentService invoiceService;
+	DocumentService documentService;
 
 	@PostMapping("/import")
 	public ResponseEntity<?> importDocument(@RequestParam("file") MultipartFile file, @CurrentUser UserPrincipal user) {
@@ -33,7 +34,7 @@ public class DocumentController {
 			if (file.isEmpty()) {
 				return new ResponseEntity<>("File is empty", HttpStatus.BAD_REQUEST);
 			}
-			Boolean isSuccess = invoiceService.importDocument(file, user);
+			Boolean isSuccess = documentService.importDocument(file, user);
 			if (isSuccess) {
 				return new ResponseEntity<>("Document uploaded successfully", HttpStatus.OK);
 			} else {
@@ -49,14 +50,17 @@ public class DocumentController {
 			@PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = Integer.MAX_VALUE) Pageable pageable,
 			@RequestBody DocumentReqDto req, @CurrentUser UserPrincipal user) {
 		try {
-			Page<DocumentListDto> list = invoiceService.getDocumentList(pageable, req, user);
-
-			if (list.isEmpty()) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No record found.");
+			Page<DocumentListDto> list = documentService.getDocumentList(pageable, req, user);
+			if (!list.isEmpty()) {
+				return ResponseEntity
+						.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Record found", list));
+			} else {
+				return ResponseEntity
+						.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "No record found", list));
 			}
-			return ResponseEntity.ok(list);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+					HttpStatus.INTERNAL_SERVER_ERROR.name(), "Internal server error " + e.getMessage()));
 		}
 	}
 

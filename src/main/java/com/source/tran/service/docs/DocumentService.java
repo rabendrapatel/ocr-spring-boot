@@ -10,7 +10,7 @@ import com.source.tran.dto.docs.DocumentReqDto;
 
 public interface DocumentService {
 
-	Boolean importDocument(MultipartFile file, UserPrincipal user) throws Exception;
+	Boolean importDocument(MultipartFile file, UserPrincipal user);
 
 	Page<DocumentListDto> getDocumentList(Pageable pageable, DocumentReqDto req, UserPrincipal user);
 

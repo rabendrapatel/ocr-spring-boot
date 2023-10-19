@@ -44,6 +44,9 @@ public class SecurityConfig {
 
 		public final String [] publicUrl= {
 				"/api/tran/auth/login/**",
+				"/api/tran/auth/register/**",
+				"/api/tran/auth/verify/email/**",
+				"/api/tran/auth/resend/email/verification/email/**",
 				"/v2/api-docs",
 				"/v3/api-docs",
 				"/swagger-resources/**",

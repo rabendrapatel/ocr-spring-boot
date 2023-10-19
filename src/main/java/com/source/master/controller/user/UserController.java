@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,9 +14,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import com.source.config.jwt.CurrentUser;
+import com.source.config.jwt.UserPrincipal;
 import com.source.master.dto.user.UserListDto;
 import com.source.master.dto.user.UserReqDto;
 import com.source.master.service.user.UserService;
+import com.source.response.ResponseRes;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -26,47 +30,53 @@ public class UserController {
 	UserService userService;
 
 	@PostMapping("/list")
-	public ResponseEntity<?> getInvoiceList(
-			@PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = Integer.MAX_VALUE) Pageable pageable,
-			@RequestBody UserReqDto req ) {
+	public ResponseEntity<?> getUserList(
+			@PageableDefault(sort = "userId", direction = Sort.Direction.DESC, size = Integer.MAX_VALUE) Pageable pageable,
+			@RequestBody UserReqDto req, @CurrentUser UserPrincipal user) {
 		try {
-			Page<UserListDto> list = userService.getUserList(pageable,req);
+			Page<UserListDto> list = userService.getUserList(pageable, req,user);
 
-			if (list.isEmpty()) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No record found.");
+			if (!list.isEmpty()) {
+				return ResponseEntity
+						.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Record found", list));
+			} else {
+				return ResponseEntity
+						.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "No record found", list));
 			}
-			return ResponseEntity.ok(list);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+					HttpStatus.INTERNAL_SERVER_ERROR.name(), "Internal server error " + e.getMessage()));
 		}
 	}
-	
+
 	@PostMapping("/save")
-	public ResponseEntity<?> saveUser(@RequestBody UserReqDto req) {
+	public ResponseEntity<?> saveUser(@RequestBody UserReqDto req, @CurrentUser UserPrincipal user) {
 		try {
-			req = userService.saveUser(req);
-			if (req!=null) {
-				return new ResponseEntity<>("Invoice uploaded successfully", HttpStatus.OK);
-			} else {
-				return new ResponseEntity<>("Invoice upload failed - ", HttpStatus.INTERNAL_SERVER_ERROR);
-			}
+			req = userService.saveUser(req,user);
+			return ResponseEntity
+					.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Saved Successfully", req));
+		} catch (RuntimeException e) {
+			return ResponseEntity.ok(
+					new ResponseRes<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(), e.getMessage()));
 		} catch (Exception e) {
-			return new ResponseEntity<>("Invoice upload failed - " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+					HttpStatus.INTERNAL_SERVER_ERROR.name(), "Internal server error " + e.getMessage()));
 		}
 	}
-	
-	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(@RequestBody UserReqDto req) {
+
+	@PutMapping("/update")
+	public ResponseEntity<?> updateUser(@RequestBody UserReqDto req, @CurrentUser UserPrincipal user) {
 		try {
-			req = userService.registerUser(req);
-			if (req!=null) {
-				return new ResponseEntity<>("Invoice uploaded successfully", HttpStatus.OK);
-			} else {
-				return new ResponseEntity<>("Invoice upload failed - ", HttpStatus.INTERNAL_SERVER_ERROR);
-			}
+			req = userService.updateUser(req,user);
+			return ResponseEntity
+					.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Updated Successfully", req));
+		} catch (RuntimeException e) {
+			return ResponseEntity.ok(
+					new ResponseRes<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(), e.getMessage()));
 		} catch (Exception e) {
-			return new ResponseEntity<>("Invoice upload failed - " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+					HttpStatus.INTERNAL_SERVER_ERROR.name(), "Internal server error " + e.getMessage()));
 		}
 	}
-	
+
 }

@@ -4,6 +4,8 @@ import org.springframework.stereotype.Repository;
 
 import com.source.master.entity.user.UserMaster;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,5 +19,9 @@ public interface UserMasterRepository extends JpaRepository<UserMaster, Long> {
 	UserMaster findByUserName(String username);
 
 	UserMaster findByUserId(Long userId);
+
+	Optional<UserMaster> findByEmail(String email);
+	
+	Optional<UserMaster> findByMobileNo(String mobileNo);
 
 }

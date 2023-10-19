@@ -17,6 +17,7 @@ public class UserPrincipal implements UserDetails {
 
 	private Long userId;
     private String userName;
+    private String password;
     private String firstName;
     private String lastName;
     private String email;
@@ -25,6 +26,7 @@ public class UserPrincipal implements UserDetails {
     private String isMobileVerify="No";
     private Integer status;
     private Long roleId;
+    private Long companyId;
     private String photo;
 
 
@@ -40,6 +42,8 @@ public class UserPrincipal implements UserDetails {
 		this.status=user.getStatus();
 		this.roleId=user.getRoleId();
 		this.photo=user.getPhoto();
+		this.companyId=user.getCompanyId();
+		this.password = user.getPassword();
 		
 	}
 
@@ -53,7 +57,7 @@ public class UserPrincipal implements UserDetails {
 	
 	@Override
 	public String getPassword() {
-		return null;
+		return this.password;
 	}
 	@Override
 	public String getUsername() {
@@ -61,19 +65,19 @@ public class UserPrincipal implements UserDetails {
 	}
 	@Override
 	public boolean isAccountNonExpired() {
-		return false;
+		return true;
 	}
 	@Override
 	public boolean isAccountNonLocked() {
-		return false;
+		return true;
 	}
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return false;
+		return true;
 	}
 	@Override
 	public boolean isEnabled() {
-		return false;
+		return true;
 	}
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

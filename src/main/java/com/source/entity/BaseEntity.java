@@ -31,5 +31,13 @@ public class BaseEntity {
 	@Column(name = "fld_updated_at", nullable = true)
 	protected LocalDateTime updatedAt;
 	
+	@Column(name="fld_created_by")
+    private Long createdBy;
+
+	@Column(name="fld_updated_by")
+    private Long updatedBy;
 	
+	@Column(name="fld_company_id")
+	private Long companyId;
+
 }

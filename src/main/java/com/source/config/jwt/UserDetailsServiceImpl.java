@@ -30,5 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     	UserMaster user = userMasterRepo.findByUserId(userId);
         return UserPrincipal.create(user);
     }
-
+    
+    
+    
 }

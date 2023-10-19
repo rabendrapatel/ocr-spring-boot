@@ -108,7 +108,7 @@ public class UserServiceImp implements UserService {
 			userMaster.setIsMobileVerify(req.getIsMobileVerify());
 			userMaster.setStatus(req.getStatus());
 			userMaster.setUpdatedBy(user.getUserId());
-			if (req.getPhoto().isEmpty()) {
+			if (!req.getPhoto().isEmpty()) {
 				userMaster.setPhoto(req.getPhoto());
 			}
 			userMaster = userMasterRepo.save(userMaster);

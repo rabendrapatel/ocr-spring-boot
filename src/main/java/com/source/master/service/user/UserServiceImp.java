@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.source.config.jwt.UserPrincipal;
 import com.source.constant.FolderPaths;
+import com.source.master.dto.user.UserDetailsDto;
 import com.source.master.dto.user.UserListDto;
 import com.source.master.dto.user.UserReqDto;
 import com.source.master.entity.user.UserMaster;
@@ -30,7 +31,7 @@ public class UserServiceImp implements UserService {
 
 	@Value("${app.aesSecret}")
 	String aesSecretKey;
-	
+
 	@Autowired
 	FileHandlerUtils fs;
 
@@ -156,8 +157,8 @@ public class UserServiceImp implements UserService {
 		user = userMasterRepo.save(user);
 
 		/* Send email to user */
-		String token = tranHelper.generateTokenByUserId(user.getUserId(),aesSecretKey);
-		emailHelper.sendEmailVerificationEmail(user,token);
+		String token = tranHelper.generateTokenByUserId(user.getUserId(), aesSecretKey);
+		emailHelper.sendEmailVerificationEmail(user, token);
 		emailHelper.sendUserDetailsOnEmail(user);
 
 		return req;
@@ -169,5 +170,16 @@ public class UserServiceImp implements UserService {
 		} else {
 			return userMasterRepo.countByEmailAndUserId(email, userId) > 0;
 		}
+	}
+
+	@Override
+	public UserDetailsDto getUserDetailsByUserId(UserPrincipal user) {
+		ModelMapper m = MapperUtils.getInstance();
+		Optional<UserMaster> optionalUserMaster = userMasterRepo.findById(user.getUserId());
+		if (optionalUserMaster.isPresent()) {
+			UserMaster userMaster = optionalUserMaster.get();
+			return m.map(userMaster, UserDetailsDto.class);
+		}
+		return null;
 	}
 }

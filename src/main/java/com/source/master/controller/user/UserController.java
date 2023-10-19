@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 
 import com.source.config.jwt.CurrentUser;
 import com.source.config.jwt.UserPrincipal;
+import com.source.master.dto.user.UserDetailsDto;
 import com.source.master.dto.user.UserListDto;
 import com.source.master.dto.user.UserReqDto;
 import com.source.master.service.user.UserService;
@@ -34,7 +35,7 @@ public class UserController {
 			@PageableDefault(sort = "userId", direction = Sort.Direction.DESC, size = Integer.MAX_VALUE) Pageable pageable,
 			@RequestBody UserReqDto req, @CurrentUser UserPrincipal user) {
 		try {
-			Page<UserListDto> list = userService.getUserList(pageable, req,user);
+			Page<UserListDto> list = userService.getUserList(pageable, req, user);
 
 			if (!list.isEmpty()) {
 				return ResponseEntity
@@ -52,7 +53,7 @@ public class UserController {
 	@PostMapping("/save")
 	public ResponseEntity<?> saveUser(@RequestBody UserReqDto req, @CurrentUser UserPrincipal user) {
 		try {
-			req = userService.saveUser(req,user);
+			req = userService.saveUser(req, user);
 			return ResponseEntity
 					.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Saved Successfully", req));
 		} catch (RuntimeException e) {
@@ -67,7 +68,7 @@ public class UserController {
 	@PutMapping("/update")
 	public ResponseEntity<?> updateUser(@RequestBody UserReqDto req, @CurrentUser UserPrincipal user) {
 		try {
-			req = userService.updateUser(req,user);
+			req = userService.updateUser(req, user);
 			return ResponseEntity
 					.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Updated Successfully", req));
 		} catch (RuntimeException e) {
@@ -78,6 +79,22 @@ public class UserController {
 					HttpStatus.INTERNAL_SERVER_ERROR.name(), "Internal server error " + e.getMessage()));
 		}
 	}
-	
 
+	@PostMapping("/get/user-details")
+	public ResponseEntity<?> getUserDetailsByUserId(@CurrentUser UserPrincipal user) {
+		try {
+			UserDetailsDto res = userService.getUserDetailsByUserId(user);
+
+			if (res != null) {
+				return ResponseEntity
+						.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Record found", res));
+			} else {
+				return ResponseEntity
+						.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "No record found", res));
+			}
+		} catch (Exception e) {
+			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+					HttpStatus.INTERNAL_SERVER_ERROR.name(), "Internal server error " + e.getMessage()));
+		}
+	}
 }

@@ -66,6 +66,11 @@ public class AuthController {
 				return ResponseEntity.ok(new ResponseRes<>(HttpStatus.UNAUTHORIZED.value(),
 						HttpStatus.UNAUTHORIZED.name(), "User is inactive"));
 			}
+			
+			if (user.getIsEmailVerify().equalsIgnoreCase("no")) {
+				return ResponseEntity.ok(new ResponseRes<>(HttpStatus.UNAUTHORIZED.value(),
+						HttpStatus.UNAUTHORIZED.name(), "Email not verified, Please verify to continue"));
+			}
 
 			Authentication authentication = authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), req.getPassword()));
@@ -94,7 +99,7 @@ public class AuthController {
 		try {
 			req = userService.registerUser(req);
 			return ResponseEntity
-					.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Register Successfully", req));
+					.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Register Successfully .Please verify your email ,link sent on you registered email", req));
 		} catch (RuntimeException e) {
 			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(),
 					e.getMessage()));
@@ -160,7 +165,7 @@ public class AuthController {
 		try {
 			req = authService.resetPassword(req);
 			return ResponseEntity
-					.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Password reset email sent successfully", req));
+					.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Password changed successfully", req));
 		} catch (RuntimeException e) {
 			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(),
 					e.getMessage()));

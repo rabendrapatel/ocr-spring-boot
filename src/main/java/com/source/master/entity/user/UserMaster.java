@@ -3,13 +3,17 @@ package com.source.master.entity.user;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.source.entity.BaseEntity;
+import com.source.master.entity.company.CompanyMaster;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -64,4 +68,13 @@ public class UserMaster extends BaseEntity implements Serializable {
     @Lob
     @Column(name = "fld_photo")
     private String photo;
+    
+    
+    @Column(name = "fld_company_id")
+    private Long companyId;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+   	@JoinColumn(name="fld_company_id",referencedColumnName = "fld_company_id",insertable = false, updatable = false)
+   	private CompanyMaster companyMaster;
+    
 }

@@ -148,7 +148,7 @@ public class UserServiceImp implements UserService {
 		UserMaster user = m.map(req, UserMaster.class);
 		user.setUserName(userName);
 		user.setPassword(password);
-		user.setRoleId(1l);
+		user.setRoleId(2l);
 		user.setStatus(1);
 		user.setIsEmailVerify("No");
 		user.setIsMobileVerify("No");
@@ -175,7 +175,7 @@ public class UserServiceImp implements UserService {
 	@Override
 	public UserDetailsDto getUserDetailsByUserId(UserPrincipal user) {
 		ModelMapper m = MapperUtils.getInstance();
-		Optional<UserMaster> optionalUserMaster = userMasterRepo.findById(user.getUserId());
+		Optional<UserMaster> optionalUserMaster = userMasterRepo.findUserDetaisByUserId(user.getUserId());
 		if (optionalUserMaster.isPresent()) {
 			UserMaster userMaster = optionalUserMaster.get();
 			return m.map(userMaster, UserDetailsDto.class);

@@ -48,6 +48,7 @@ public class SecurityConfig {
 				"/api/tran/auth/verify/email/**",
 				"/api/tran/auth/resend/email/verification/email/**",
 				"/api/tran/auth/send/reste/password/email/**",
+				"/api/tran/auth/reset/password/**",
 				"/api/general/util/**",
 				"/v2/api-docs",
 				"/v3/api-docs",

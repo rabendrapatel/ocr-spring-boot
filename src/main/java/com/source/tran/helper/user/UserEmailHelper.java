@@ -71,7 +71,7 @@ public class UserEmailHelper {
 	}
 
 	public String sendResetPasswordEmail(UserMaster user, String token) {
-		String resetLink = frontEndPath+"reset-password?token="+token;
+		String resetLink = frontEndPath+"/auth/reset-password?token="+token;
 
 		String subject = "Password Reset Request";
 		String emailContent = 

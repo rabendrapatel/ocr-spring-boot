@@ -16,4 +16,13 @@ public class UserDetailsDto {
     private Long roleId;
     private Long companyId;
     private String photo;
+    private CompanyDto companyMaster;
+    
+    @Data
+    private static class CompanyDto {
+	  	private String companyName;
+	    private String companyCode;
+	    private String companySortName;
+	    private String photo;
+    }
 }

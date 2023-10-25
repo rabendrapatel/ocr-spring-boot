@@ -150,7 +150,7 @@ public class AuthController {
 		try {
 			req = authService.sendResetPasswordEmail(req);
 			return ResponseEntity
-					.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Password reset email sent successfully", req));
+					.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "A password reset email has been sent successfully", req));
 		} catch (RuntimeException e) {
 			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(),
 					e.getMessage()));

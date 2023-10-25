@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.source.master.entity.user.UserMaster;
+import com.source.entity.master.user.UserMaster;
 
 import lombok.Data;
 

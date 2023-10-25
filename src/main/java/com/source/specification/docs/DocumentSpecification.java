@@ -5,8 +5,8 @@ import java.util.List;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
-import com.source.tran.dto.docs.DocumentReqDto;
-import com.source.tran.entity.docs.Document;
+import com.source.dto.tran.docs.DocumentReqDto;
+import com.source.entity.tran.docs.Document;
 
 public class DocumentSpecification  {
 

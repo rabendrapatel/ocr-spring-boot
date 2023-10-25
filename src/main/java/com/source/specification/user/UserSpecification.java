@@ -5,8 +5,8 @@ import java.util.List;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
-import com.source.master.dto.user.UserReqDto;
-import com.source.master.entity.user.UserMaster;
+import com.source.dto.master.user.UserReqDto;
+import com.source.entity.master.user.UserMaster;
 
 public class UserSpecification  {
 

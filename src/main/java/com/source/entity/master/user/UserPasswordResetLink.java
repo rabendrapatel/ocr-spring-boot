@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
-import com.source.entity.BaseEntity;
+import com.source.entity.general.BaseEntity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

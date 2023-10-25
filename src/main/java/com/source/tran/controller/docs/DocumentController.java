@@ -33,7 +33,7 @@ public class DocumentController {
 		try {
 			Boolean isSuccess = documentService.importDocument(file, user);
 			return ResponseEntity.ok(
-					new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Saved Successfully", isSuccess));
+					new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Uploaded Successfully", isSuccess));
 		} catch (RuntimeException e) {
 			return ResponseEntity.ok(
 					new ResponseRes<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(), e.getMessage()));

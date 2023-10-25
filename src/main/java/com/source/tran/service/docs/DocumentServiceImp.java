@@ -41,12 +41,18 @@ public class DocumentServiceImp implements DocumentService {
 				// If it's a PDF, convert it to images
 				String data = helper.processPdf(file);
 				Document invoice = helper.processOCRData(data);
+				invoice.setCreatedBy(user.getUserId());
+				invoice.setUpdatedBy(user.getUserId());
+				invoice.setCompanyId(user.getCompanyId());
 				documentRepo.save(invoice);
 				return true;
 			} else if (file.getContentType().startsWith("image/")) {
 				// If it's an PNG image, perform OCR directly
 				String data = helper.processImage(file);
 				Document invoice = helper.processOCRData(data);
+				invoice.setCreatedBy(user.getUserId());
+				invoice.setUpdatedBy(user.getUserId());
+				invoice.setCompanyId(user.getCompanyId());
 				documentRepo.save(invoice);
 				return true;
 			} else {

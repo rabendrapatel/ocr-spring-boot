@@ -99,7 +99,7 @@ public class AuthController {
 		try {
 			req = userService.registerUser(req);
 			return ResponseEntity
-					.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Register Successfully .Please verify your email ,link sent on you registered email", req));
+					.ok(new ResponseRes<>(HttpStatus.OK.value(), HttpStatus.OK.name(), "Registration successful. Please verify your email; a link has been sent to your registered email", req));
 		} catch (RuntimeException e) {
 			return ResponseEntity.ok(new ResponseRes<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(),
 					e.getMessage()));

@@ -17,7 +17,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "tbl_invoice_details")
+@Table(name = "tbl_tran_scaned_document")
 @EqualsAndHashCode(callSuper=false)
 public class Document extends BaseEntity implements Serializable {
 

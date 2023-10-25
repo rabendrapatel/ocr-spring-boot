@@ -17,14 +17,18 @@ public class UserTranHelper {
 	@Autowired
 	BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	public String generateUserName(String email) {
-		String[] parts = email.split("@");
-		if (parts.length == 2) {
-			String username = parts[0];
-			return username ;
-		} else {
-			return "User" + getRandomNo();
-		}
+	public String generateUserName(String email, String mobileNo) {
+		 String generateBy = "email";
+		 if ("email".equalsIgnoreCase(generateBy)) {
+            String[] parts = email.split("@");
+            if (parts.length == 2) {
+                String username = parts[0];
+                return username;
+            }
+        } else if ("mobile".equalsIgnoreCase(generateBy)) {
+            return mobileNo;
+        }
+        return "U" + getRandomNo();
 	}
 
 	private int getRandomNo() {

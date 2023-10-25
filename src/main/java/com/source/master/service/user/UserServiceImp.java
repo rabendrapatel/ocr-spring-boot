@@ -79,7 +79,7 @@ public class UserServiceImp implements UserService {
 		userMasterRepo.findByMobileNo(req.getMobileNo()).ifPresent(u -> {
 			throw new RuntimeException("Mobile already exist");
 		});
-		String userName = tranHelper.generateUserName(req.getEmail());
+		String userName = tranHelper.generateUserName(req.getEmail(),req.getMobileNo());
 		String password = tranHelper.encodePassword(req.getPassword());
 		Optional.ofNullable(req.getPhoto()).filter(base64 -> !base64.isEmpty()).ifPresent(base64 -> {
 			String fileName = userName + ".png";
@@ -137,7 +137,7 @@ public class UserServiceImp implements UserService {
 		});
 
 		/* Save user details */
-		String userName = tranHelper.generateUserName(req.getEmail());
+		String userName = tranHelper.generateUserName(req.getEmail(),req.getMobileNo());
 		String password = tranHelper.encodePassword(req.getPassword());
 		Optional.ofNullable(req.getPhoto()).filter(base64 -> !base64.isEmpty()).ifPresent(base64 -> {
 			String fileName = userName + ".png";

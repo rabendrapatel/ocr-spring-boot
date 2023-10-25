@@ -18,9 +18,11 @@ import com.source.constant.FolderPaths;
 import com.source.dto.master.user.UserDetailsDto;
 import com.source.dto.master.user.UserListDto;
 import com.source.dto.master.user.UserReqDto;
+import com.source.entity.general.SettingsMaster;
 import com.source.entity.master.user.UserMaster;
 import com.source.helper.tran.user.UserEmailHelper;
 import com.source.helper.tran.user.UserTranHelper;
+import com.source.repository.general.SettingsMasterRepository;
 import com.source.repository.master.user.UserMasterRepository;
 import com.source.specification.user.UserSpecification;
 import com.source.utill.FileHandlerUtils;
@@ -44,6 +46,9 @@ public class UserServiceImp implements UserService {
 	@Autowired
 	UserMasterRepository userMasterRepo;
 
+	@Autowired
+	SettingsMasterRepository settingsMasterRepo;
+	
 	@Override
 	public UserMaster findByUserId(Long userId) {
 		return userMasterRepo.findByUserId(userId);
@@ -79,7 +84,11 @@ public class UserServiceImp implements UserService {
 		userMasterRepo.findByMobileNo(req.getMobileNo()).ifPresent(u -> {
 			throw new RuntimeException("Mobile already exist");
 		});
-		String userName = tranHelper.generateUserName(req.getEmail(),req.getMobileNo());
+		
+		Optional<SettingsMaster> settingOptional = settingsMasterRepo.findByCompanyId(req.getCompanyId());
+		String generatdBy = settingOptional.map(SettingsMaster::getGenUserNameBy).orElse("");
+
+		String userName = tranHelper.generateUserName(req.getEmail(),req.getMobileNo(),generatdBy);
 		String password = tranHelper.encodePassword(req.getPassword());
 		Optional.ofNullable(req.getPhoto()).filter(base64 -> !base64.isEmpty()).ifPresent(base64 -> {
 			String fileName = userName + ".png";
@@ -137,7 +146,10 @@ public class UserServiceImp implements UserService {
 		});
 
 		/* Save user details */
-		String userName = tranHelper.generateUserName(req.getEmail(),req.getMobileNo());
+		Optional<SettingsMaster> settingOptional = settingsMasterRepo.findByCompanyId(req.getCompanyId());
+		String generatdBy = settingOptional.map(SettingsMaster::getGenUserNameBy).orElse("");
+
+		String userName = tranHelper.generateUserName(req.getEmail(),req.getMobileNo(),generatdBy);
 		String password = tranHelper.encodePassword(req.getPassword());
 		Optional.ofNullable(req.getPhoto()).filter(base64 -> !base64.isEmpty()).ifPresent(base64 -> {
 			String fileName = userName + ".png";

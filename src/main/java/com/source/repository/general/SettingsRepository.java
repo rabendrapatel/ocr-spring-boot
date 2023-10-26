@@ -2,15 +2,15 @@ package com.source.repository.general;
 
 import org.springframework.stereotype.Repository;
 
-import com.source.entity.general.SettingsMaster;
+import com.source.entity.general.Settings;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
-public interface SettingsMasterRepository extends JpaRepository<SettingsMaster, Long> {
+public interface SettingsRepository extends JpaRepository<Settings, Long> {
 
-	Optional<SettingsMaster> findByCompanyId(Long companyId);
+	Optional<Settings> findByCompanyId(Long companyId);
 
 }

@@ -18,11 +18,11 @@ import com.source.constant.FolderPaths;
 import com.source.dto.master.user.UserDetailsDto;
 import com.source.dto.master.user.UserListDto;
 import com.source.dto.master.user.UserReqDto;
-import com.source.entity.general.SettingsMaster;
+import com.source.entity.general.Settings;
 import com.source.entity.master.user.UserMaster;
 import com.source.helper.tran.user.UserEmailHelper;
 import com.source.helper.tran.user.UserTranHelper;
-import com.source.repository.general.SettingsMasterRepository;
+import com.source.repository.general.SettingsRepository;
 import com.source.repository.master.user.UserMasterRepository;
 import com.source.specification.user.UserSpecification;
 import com.source.utill.FileHandlerUtils;
@@ -47,7 +47,7 @@ public class UserServiceImp implements UserService {
 	UserMasterRepository userMasterRepo;
 
 	@Autowired
-	SettingsMasterRepository settingsMasterRepo;
+	SettingsRepository settingsRepo;
 	
 	@Override
 	public UserMaster findByUserId(Long userId) {
@@ -85,8 +85,8 @@ public class UserServiceImp implements UserService {
 			throw new RuntimeException("Mobile already exist");
 		});
 		
-		Optional<SettingsMaster> settingOptional = settingsMasterRepo.findByCompanyId(req.getCompanyId());
-		String generatdBy = settingOptional.map(SettingsMaster::getGenUserNameBy).orElse("");
+		Optional<Settings> settingOptional = settingsRepo.findByCompanyId(req.getCompanyId());
+		String generatdBy = settingOptional.map(Settings::getGenUserNameBy).orElse("");
 
 		String userName = tranHelper.generateUserName(req.getEmail(),req.getMobileNo(),generatdBy);
 		String password = tranHelper.encodePassword(req.getPassword());
@@ -146,8 +146,8 @@ public class UserServiceImp implements UserService {
 		});
 
 		/* Save user details */
-		Optional<SettingsMaster> settingOptional = settingsMasterRepo.findByCompanyId(req.getCompanyId());
-		String generatdBy = settingOptional.map(SettingsMaster::getGenUserNameBy).orElse("");
+		Optional<Settings> settingOptional = settingsRepo.findByCompanyId(req.getCompanyId());
+		String generatdBy = settingOptional.map(Settings::getGenUserNameBy).orElse("");
 
 		String userName = tranHelper.generateUserName(req.getEmail(),req.getMobileNo(),generatdBy);
 		String password = tranHelper.encodePassword(req.getPassword());

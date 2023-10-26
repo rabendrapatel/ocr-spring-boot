@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Table(name = "tbl_master_setting")
 @EqualsAndHashCode(callSuper=false)
-public class SettingsMaster extends BaseEntity implements Serializable {
+public class Settings extends BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

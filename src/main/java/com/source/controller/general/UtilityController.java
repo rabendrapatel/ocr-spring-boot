@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,11 @@ public class UtilityController {
 	@Value("${sc.system.doc.path}")
 	String serverFolderPath;
 
+	@GetMapping(value = "/")
+	public String start() {
+		return "Running successfully";
+	}
+	
 	@RequestMapping(value = "/get/file/by/name/**", method = RequestMethod.GET)
 	public StreamingResponseBody downloadFile(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
